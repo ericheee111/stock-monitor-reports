@@ -66,14 +66,30 @@
   所有信号均由 AI 基于公开信息生成，仅供研究参考，不构成投资建议；入场前需在券商实时行情中再次确认。本站不自动执行交易。
 </footer>
 <script>
-const REPO = 'reports/';
+const GH_BASE = 'https://ericheee111.github.io/stock-monitor-reports/';
+const MIRROR = 'https://cdn.jsdelivr.net/gh/ericheee111/stock-monitor-reports@main/';
+const SOURCES = ['', MIRROR];
+const delay = ms => new Promise(r => setTimeout(r, ms));
+async function fetchText(path) {
+  let lastErr = null;
+  for (let s = 0; s < SOURCES.length; s++) {
+    for (let t = 0; t < 2; t++) {
+      try {
+        const url = (SOURCES[s] ? SOURCES[s] : GH_BASE) + path + '?t=' + Date.now();
+        const res = await fetch(url, { cache: 'no-store' });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return { text: await res.text(), via: s };
+      } catch (e) { lastErr = e; await delay(600); }
+    }
+  }
+  throw lastErr || new Error('all sources failed');
+}
 function load() {
-  fetch(REPO + 'index.json', { cache: 'no-store' })
-    .then(r => { if (!r.ok) throw new Error('no index'); return r.json(); })
-    .then(data => render(data))
+  fetchText('reports/index.json')
+    .then(({ text }) => render(JSON.parse(text)))
     .catch(() => {
       document.getElementById('list').innerHTML =
-        '<div class="empty" style="padding:16px">暂无报告</div>';
+        '<div class="empty" style="padding:16px">报告索引加载失败<br><span style="font-size:12px">网络波动，请稍后下拉刷新重试</span></div>';
       document.getElementById('updated').textContent = '';
     });
 }
@@ -96,13 +112,25 @@ function render(data) {
   }
   document.getElementById('updated').textContent = data.generatedAt ? ('更新于 ' + data.generatedAt) : '';
 }
-function show(r) {
+async function show(r) {
   const main = document.getElementById('main');
   main.innerHTML = '<div class="empty">加载中…</div>';
-  fetch(REPO + r.file, { cache: 'no-store' })
-    .then(res => { if (!res.ok) throw new Error('load fail'); return res.text(); })
-    .then(md => { main.innerHTML = '<div class="md">' + marked.parse(md) + '</div>'; })
-    .catch(() => { main.innerHTML = '<div class="empty">报告文件加载失败：' + r.file + '</div>'; });
+  try {
+    const { text, via } = await fetchText(r.file);
+    main.innerHTML = '<div class="md">' + marked.parse(text) + '</div>';
+    if (via > 0) {
+      const tip = document.createElement('div');
+      tip.style.cssText = 'font-size:12px;color:var(--muted);margin-top:16px;';
+      tip.textContent = '（主源加载失败，本报告经备用镜像提供，内容可能滞后最多 12 小时）';
+      main.appendChild(tip);
+    }
+  } catch (e) {
+    const gh = GH_BASE + r.file, cd = MIRROR + r.file;
+    main.innerHTML = '<div class="empty">报告加载失败（网络波动）<br><br>' +
+      '<a href="' + gh + '" target="_blank" style="color:var(--accent)">打开报告原文（GitHub）</a><br>' +
+      '<a href="' + cd + '" target="_blank" style="color:var(--accent)">打开报告原文（备用镜像）</a><br>' +
+      '<span style="font-size:12px">也可稍后下拉刷新重试</span></div>';
+  }
 }
 load();
 </script>
