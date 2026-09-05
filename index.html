@@ -2,65 +2,79 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>A股和港股每日双时段交易机会监控报告</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#185fa5">
+<title>A股和港股监控报告</title>
 <script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
 <style>
   :root {
     --bg: #f5f6f8; --card: #ffffff; --text: #1f2328; --muted: #656d76;
     --border: #d8dee4; --accent: #185fa5; --accent-soft: #e6f1fb;
-    --red: #a32d2d; --green: #1d7a3d;
+    --am-bg: #eaf3de; --am-tx: #3b6d11; --pm-bg: #e6f1fb; --pm-tx: #185fa5;
   }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html { -webkit-text-size-adjust: 100%; }
   body { background: var(--bg); color: var(--text);
-    font-family: "Segoe UI", "Microsoft YaHei", system-ui, sans-serif; font-size: 15px; line-height: 1.7; }
+    font-family: -apple-system, "PingFang SC", "Segoe UI", "Microsoft YaHei", system-ui, sans-serif;
+    font-size: 15px; line-height: 1.7; }
   header { background: var(--card); border-bottom: 1px solid var(--border);
-    padding: 18px 24px; display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
-  header h1 { font-size: 19px; font-weight: 600; }
-  header .sub { color: var(--muted); font-size: 13px; }
-  .wrap { max-width: 1180px; margin: 20px auto; padding: 0 16px; display: flex; gap: 18px; align-items: flex-start; }
-  aside { width: 300px; flex-shrink: 0; background: var(--card); border: 1px solid var(--border);
-    border-radius: 12px; padding: 14px; position: sticky; top: 16px; max-height: calc(100vh - 40px); overflow-y: auto; }
-  aside h2 { font-size: 13px; color: var(--muted); font-weight: 600; margin-bottom: 10px; letter-spacing: .04em; }
-  .item { display: block; width: 100%; text-align: left; background: none; border: 1px solid transparent;
-    border-radius: 8px; padding: 9px 11px; cursor: pointer; font: inherit; color: var(--text); margin-bottom: 4px; }
-  .item:hover { background: var(--bg); }
-  .item.active { background: var(--accent-soft); border-color: var(--accent); }
-  .item .t { font-size: 14px; font-weight: 500; }
-  .item .d { font-size: 12px; color: var(--muted); }
-  .badge { display: inline-block; font-size: 11px; padding: 1px 7px; border-radius: 10px; margin-left: 6px; vertical-align: 1px; }
-  .badge.am { background: #eaf3de; color: #3b6d11; }
-  .badge.pm { background: #e6f1fb; color: #185fa5; }
-  main { flex: 1; min-width: 0; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 28px 32px; }
-  .empty { color: var(--muted); text-align: center; padding: 60px 20px; }
-  .md h1 { font-size: 20px; margin: 4px 0 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+    padding: 14px 16px; position: sticky; top: 0; z-index: 10; }
+  header .row { max-width: 880px; margin: 0 auto; display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+  header h1 { font-size: 17px; font-weight: 600; }
+  header .sub { color: var(--muted); font-size: 12px; white-space: nowrap; }
+  .wrap { max-width: 880px; margin: 14px auto 30px; padding: 0 12px; }
+  /* ── 日期分组选择器 ── */
+  .picker { background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 14px; }
+  .dgroup + .dgroup { border-top: 1px solid var(--border); }
+  .drow { width: 100%; display: flex; align-items: center; gap: 8px; padding: 13px 16px;
+    background: none; border: none; font: inherit; cursor: pointer; text-align: left; }
+  .drow:active { background: var(--bg); }
+  .drow .arrow { color: var(--muted); font-size: 12px; transition: transform .15s; }
+  .dgroup.open .drow .arrow { transform: rotate(90deg); }
+  .drow .date { font-weight: 600; font-size: 15px; }
+  .drow .cnt { color: var(--muted); font-size: 12px; margin-left: auto; }
+  .chips { display: none; padding: 2px 12px 12px; gap: 8px; flex-direction: column; }
+  .dgroup.open .chips { display: flex; }
+  .chip { display: flex; align-items: center; gap: 8px; width: 100%; text-align: left;
+    border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px;
+    background: var(--bg); font: inherit; cursor: pointer; }
+  .chip:active { background: var(--accent-soft); }
+  .chip.active { background: var(--accent-soft); border-color: var(--accent); }
+  .tag { flex-shrink: 0; font-size: 12px; padding: 2px 9px; border-radius: 10px; }
+  .tag.am { background: var(--am-bg); color: var(--am-tx); }
+  .tag.pm { background: var(--pm-bg); color: var(--pm-tx); }
+  .chip .t { font-size: 13px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .chip.active .t { color: var(--text); }
+  /* ── 正文 ── */
+  main { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px 16px; }
+  @media (min-width: 600px) { main { padding: 28px 32px; } header h1 { font-size: 19px; } }
+  .empty { color: var(--muted); text-align: center; padding: 50px 16px; }
+  .md h1 { font-size: 19px; margin: 2px 0 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
   .md h2 { font-size: 17px; margin: 22px 0 10px; }
   .md h3 { font-size: 15px; margin: 18px 0 8px; }
-  .md p, .md li { font-size: 14.5px; }
-  .md table { border-collapse: collapse; width: 100%; margin: 12px 0; font-size: 13px; display: block; overflow-x: auto; }
-  .md th, .md td { border: 1px solid var(--border); padding: 6px 10px; text-align: left; }
-  .md th { background: var(--bg); }
+  .md p, .md li { font-size: 15px; }
+  .md table { border-collapse: collapse; width: 100%; margin: 12px 0; font-size: 13px; display: block; overflow-x: auto; white-space: nowrap; }
+  .md th, .md td { border: 1px solid var(--border); padding: 7px 10px; text-align: left; }
+  .md th { background: var(--bg); position: sticky; }
   .md blockquote { border-left: 3px solid var(--accent); background: var(--accent-soft);
-    padding: 10px 14px; margin: 12px 0; border-radius: 0 8px 8px 0; color: var(--text); }
+    padding: 10px 14px; margin: 12px 0; border-radius: 0 8px 8px 0; }
   .md code { background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; font-size: 13px; }
   .md hr { border: none; border-top: 1px solid var(--border); margin: 18px 0; }
-  footer { text-align: center; color: var(--muted); font-size: 12px; padding: 10px 16px 26px; }
-  @media (max-width: 860px) { .wrap { flex-direction: column; } aside { width: 100%; position: static; max-height: none; } }
+  .via-tip { font-size: 12px; color: var(--muted); margin-top: 16px; }
+  footer { text-align: center; color: var(--muted); font-size: 12px; padding: 4px 16px 30px; }
+  .err-link { color: var(--accent); }
 </style>
 </head>
 <body>
 <header>
-  <h1>A股和港股每日双时段交易机会监控报告</h1>
-  <span class="sub" id="updated"></span>
+  <div class="row">
+    <h1>A股和港股监控报告</h1>
+    <div class="sub" id="updated"></div>
+  </div>
 </header>
 <div class="wrap">
-  <aside>
-    <h2>报告列表</h2>
-    <div id="list"><div class="empty" style="padding:16px">加载中…</div></div>
-  </aside>
-  <main id="main">
-    <div class="empty">选择左侧任意一份报告查看。<br>暂无报告时，说明监控任务尚未发布新内容。</div>
-  </main>
+  <section class="picker" id="picker"><div class="empty" style="padding:14px">加载中…</div></section>
+  <main id="main"><div class="empty">正在载入最新报告…</div></main>
 </div>
 <footer>
   所有信号均由 AI 基于公开信息生成，仅供研究参考，不构成投资建议；入场前需在券商实时行情中再次确认。本站不自动执行交易。
@@ -70,66 +84,99 @@ const GH_BASE = 'https://ericheee111.github.io/stock-monitor-reports/';
 const MIRROR = 'https://cdn.jsdelivr.net/gh/ericheee111/stock-monitor-reports@main/';
 const SOURCES = ['', MIRROR];
 const delay = ms => new Promise(r => setTimeout(r, ms));
+
 async function fetchText(path) {
   let lastErr = null;
   for (let s = 0; s < SOURCES.length; s++) {
     for (let t = 0; t < 2; t++) {
       try {
-        const url = (SOURCES[s] ? SOURCES[s] : GH_BASE) + path + '?t=' + Date.now();
+        const url = (SOURCES[s] || GH_BASE) + path + '?t=' + Date.now();
         const res = await fetch(url, { cache: 'no-store' });
         if (!res.ok) throw new Error('HTTP ' + res.status);
         return { text: await res.text(), via: s };
-      } catch (e) { lastErr = e; await delay(600); }
+      } catch (e) { lastErr = e; await delay(500); }
     }
   }
   throw lastErr || new Error('all sources failed');
 }
+
+let REPORTS = [];
+let CURRENT = null;
+
 function load() {
   fetchText('reports/index.json')
-    .then(({ text }) => render(JSON.parse(text)))
+    .then(({ text }) => { const d = JSON.parse(text); REPORTS = d.reports || [];
+      document.getElementById('updated').textContent = d.generatedAt ? ('更新于 ' + d.generatedAt) : '';
+      renderPicker(); })
     .catch(() => {
-      document.getElementById('list').innerHTML =
-        '<div class="empty" style="padding:16px">报告索引加载失败<br><span style="font-size:12px">网络波动，请稍后下拉刷新重试</span></div>';
-      document.getElementById('updated').textContent = '';
+      document.getElementById('picker').innerHTML = '<div class="empty" style="padding:14px">索引加载失败，请稍后下拉刷新重试</div>';
+      document.getElementById('main').innerHTML = '<div class="empty">网络波动，刷新页面可重试</div>';
     });
 }
-function render(data) {
-  const list = document.getElementById('list');
-  const reports = (data.reports || []).slice().sort((a, b) => b.date.localeCompare(a.date) || (b.session === 'am' ? -1 : 1) - (a.session === 'am' ? -1 : 1));
-  if (!reports.length) {
-    list.innerHTML = '<div class="empty" style="padding:16px">暂无报告<br><span style="font-size:12px">监控任务运行后会自动发布到这里</span></div>';
-  } else {
-    list.innerHTML = '';
-    reports.forEach((r, i) => {
-      const btn = document.createElement('button');
-      btn.className = 'item' + (i === 0 ? ' active' : '');
-      btn.innerHTML = '<div class="t">' + r.date + ' <span class="badge ' + (r.session === 'am' ? 'am">上午' : 'pm">下午') + '</span></div>' +
-        '<div class="d">' + (r.title || '') + '</div>';
-      btn.onclick = () => { document.querySelectorAll('.item').forEach(e => e.classList.remove('active')); btn.classList.add('active'); show(r); };
-      list.appendChild(btn);
-    });
-    show(reports[0]);
+
+function renderPicker() {
+  const picker = document.getElementById('picker');
+  if (!REPORTS.length) {
+    picker.innerHTML = '<div class="empty" style="padding:14px">暂无报告，监控任务运行后会自动发布</div>';
+    return;
   }
-  document.getElementById('updated').textContent = data.generatedAt ? ('更新于 ' + data.generatedAt) : '';
+  const sorted = REPORTS.slice().sort((a, b) =>
+    b.date.localeCompare(a.date) || (a.session === 'pm' ? -1 : 1) - (b.session === 'pm' ? -1 : 1));
+  const dates = [...new Set(sorted.map(r => r.date))];
+  picker.innerHTML = '';
+  dates.forEach((date, gi) => {
+    const items = sorted.filter(r => r.date === date);
+    const group = document.createElement('div');
+    group.className = 'dgroup' + (gi === 0 ? ' open' : '');
+    const row = document.createElement('button');
+    row.className = 'drow';
+    row.innerHTML = '<span class="arrow">▶</span><span class="date">' + date + '</span><span class="cnt">' + items.length + ' 篇</span>';
+    const chips = document.createElement('div');
+    chips.className = 'chips';
+    items.forEach(r => {
+      const chip = document.createElement('button');
+      chip.className = 'chip';
+      chip.innerHTML = '<span class="tag ' + (r.session === 'am' ? 'am">上午' : 'pm">下午') + '</span><span class="t">' + (r.title || '') + '</span>';
+      chip.onclick = () => select(r, chips, chip);
+      chips.appendChild(chip);
+    });
+    row.onclick = () => {
+      const wasOpen = group.classList.contains('open');
+      document.querySelectorAll('.dgroup').forEach(g => g.classList.remove('open'));
+      if (!wasOpen) group.classList.add('open');
+    };
+    group.appendChild(row); group.appendChild(chips);
+    picker.appendChild(group);
+    if (gi === 0) { CURRENT = null; chips.children[0].classList.add('active'); show(items[0]); }
+  });
 }
+
+function select(r, chips, chip) {
+  chips.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  chip.classList.add('active');
+  show(r);
+}
+
 async function show(r) {
+  CURRENT = r;
   const main = document.getElementById('main');
   main.innerHTML = '<div class="empty">加载中…</div>';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
   try {
     const { text, via } = await fetchText(r.file);
+    if (CURRENT !== r) return;
     main.innerHTML = '<div class="md">' + marked.parse(text) + '</div>';
     if (via > 0) {
       const tip = document.createElement('div');
-      tip.style.cssText = 'font-size:12px;color:var(--muted);margin-top:16px;';
-      tip.textContent = '（主源加载失败，本报告经备用镜像提供，内容可能滞后最多 12 小时）';
+      tip.className = 'via-tip';
+      tip.textContent = '（主源暂时不可达，本报告经备用镜像提供，内容可能滞后最多 12 小时）';
       main.appendChild(tip);
     }
   } catch (e) {
-    const gh = GH_BASE + r.file, cd = MIRROR + r.file;
-    main.innerHTML = '<div class="empty">报告加载失败（网络波动）<br><br>' +
-      '<a href="' + gh + '" target="_blank" style="color:var(--accent)">打开报告原文（GitHub）</a><br>' +
-      '<a href="' + cd + '" target="_blank" style="color:var(--accent)">打开报告原文（备用镜像）</a><br>' +
-      '<span style="font-size:12px">也可稍后下拉刷新重试</span></div>';
+    if (CURRENT !== r) return;
+    main.innerHTML = '<div class="empty">报告加载失败（网络波动），可稍后下拉刷新<br><br>' +
+      '<a class="err-link" href="' + GH_BASE + r.file + '" target="_blank">打开报告原文（GitHub）</a><br>' +
+      '<a class="err-link" href="' + MIRROR + r.file + '" target="_blank">打开报告原文（备用镜像）</a></div>';
   }
 }
 load();
