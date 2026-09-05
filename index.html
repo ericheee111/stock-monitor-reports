@@ -11,6 +11,7 @@
     --bg: #f5f6f8; --card: #ffffff; --text: #1f2328; --muted: #656d76;
     --border: #d8dee4; --accent: #185fa5; --accent-soft: #e6f1fb;
     --am-bg: #eaf3de; --am-tx: #3b6d11; --pm-bg: #e6f1fb; --pm-tx: #185fa5;
+    --ok: #1d7a3d; --warn: #993c1d;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   html { -webkit-text-size-adjust: 100%; }
@@ -18,12 +19,16 @@
     font-family: -apple-system, "PingFang SC", "Segoe UI", "Microsoft YaHei", system-ui, sans-serif;
     font-size: 15px; line-height: 1.7; }
   header { background: var(--card); border-bottom: 1px solid var(--border);
-    padding: 14px 16px; position: sticky; top: 0; z-index: 10; }
-  header .row { max-width: 880px; margin: 0 auto; display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+    padding: 10px 16px 0; position: sticky; top: 0; z-index: 10; }
+  header .row { max-width: 880px; margin: 0 auto; }
   header h1 { font-size: 17px; font-weight: 600; }
   header .sub { color: var(--muted); font-size: 12px; white-space: nowrap; }
+  .tabs { display: flex; gap: 4px; margin-top: 8px; }
+  .tab { flex: 1; border: none; background: none; font: inherit; font-size: 14px; padding: 9px 4px;
+    color: var(--muted); border-bottom: 2px solid transparent; cursor: pointer; }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
   .wrap { max-width: 880px; margin: 14px auto 30px; padding: 0 12px; }
-  /* ── 日期分组选择器 ── */
+  /* ── 报告：日期分组选择器 ── */
   .picker { background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 14px; }
   .dgroup + .dgroup { border-top: 1px solid var(--border); }
   .drow { width: 100%; display: flex; align-items: center; gap: 8px; padding: 13px 16px;
@@ -55,7 +60,7 @@
   .md p, .md li { font-size: 15px; }
   .md table { border-collapse: collapse; width: 100%; margin: 12px 0; font-size: 13px; display: block; overflow-x: auto; white-space: nowrap; }
   .md th, .md td { border: 1px solid var(--border); padding: 7px 10px; text-align: left; }
-  .md th { background: var(--bg); position: sticky; }
+  .md th { background: var(--bg); }
   .md blockquote { border-left: 3px solid var(--accent); background: var(--accent-soft);
     padding: 10px 14px; margin: 12px 0; border-radius: 0 8px 8px 0; }
   .md code { background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; font-size: 13px; }
@@ -63,6 +68,34 @@
   .via-tip { font-size: 12px; color: var(--muted); margin-top: 16px; }
   footer { text-align: center; color: var(--muted); font-size: 12px; padding: 4px 16px 30px; }
   .err-link { color: var(--accent); }
+  /* ── 持仓编辑 ── */
+  .note { font-size: 12px; color: var(--muted); background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 10px 12px; margin-bottom: 12px; }
+  .sec-title { font-size: 15px; font-weight: 600; margin: 16px 0 8px; }
+  .stock-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 12px; margin-bottom: 10px; }
+  .stock-card .head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+  .stock-card .name { font-weight: 600; font-size: 15px; }
+  .del { border: none; background: none; color: var(--warn); font-size: 13px; cursor: pointer; padding: 2px 4px; }
+  .fields { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .fields label { font-size: 11px; color: var(--muted); display: block; margin-bottom: 2px; }
+  .fields input { width: 100%; border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px;
+    font: inherit; font-size: 14px; background: var(--bg); }
+  .fields input:focus { outline: none; border-color: var(--accent); }
+  .full { grid-column: 1 / -1; }
+  .addbtn, .savebtn { width: 100%; border: 1px dashed var(--border); background: var(--card);
+    border-radius: 10px; padding: 11px; font: inherit; font-size: 14px; color: var(--muted); cursor: pointer; margin-bottom: 14px; }
+  .savebtn { border-style: solid; background: var(--accent); color: #fff; font-weight: 600; border-color: var(--accent); }
+  .savebtn:active { opacity: .85; }
+  .status { text-align: center; font-size: 13px; margin-top: 10px; min-height: 20px; }
+  .status.ok { color: var(--ok); }
+  .status.err { color: var(--warn); }
+  .token-box { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; }
+  .token-box h3 { font-size: 15px; margin-bottom: 8px; }
+  .token-box ol { font-size: 13px; color: var(--muted); padding-left: 18px; margin: 8px 0 12px; }
+  .token-box a { color: var(--accent); }
+  .token-box input { width: 100%; border: 1px solid var(--border); border-radius: 8px; padding: 10px;
+    font: inherit; font-size: 13px; background: var(--bg); margin-bottom: 10px; }
+  .hidden { display: none !important; }
 </style>
 </head>
 <body>
@@ -71,20 +104,29 @@
     <h1>A股和港股监控报告</h1>
     <div class="sub" id="updated"></div>
   </div>
+  <div class="tabs">
+    <button class="tab active" id="tabbtn-report" onclick="switchTab('report')">报告</button>
+    <button class="tab" id="tabbtn-holdings" onclick="switchTab('holdings')">持仓编辑</button>
+  </div>
 </header>
 <div class="wrap">
-  <section class="picker" id="picker"><div class="empty" style="padding:14px">加载中…</div></section>
-  <main id="main"><div class="empty">正在载入最新报告…</div></main>
+  <div id="tab-report">
+    <section class="picker" id="picker"><div class="empty" style="padding:14px">加载中…</div></section>
+    <main id="main"><div class="empty">正在载入最新报告…</div></main>
+  </div>
+  <div id="tab-holdings" class="hidden">
+    <div id="holdings-body"><div class="empty">加载中…</div></div>
+  </div>
 </div>
 <footer>
   所有信号均由 AI 基于公开信息生成，仅供研究参考，不构成投资建议；入场前需在券商实时行情中再次确认。本站不自动执行交易。
 </footer>
 <script>
+/* ═══ 通用：多源取数 ═══ */
 const GH_BASE = 'https://ericheee111.github.io/stock-monitor-reports/';
 const MIRROR = 'https://cdn.jsdelivr.net/gh/ericheee111/stock-monitor-reports@main/';
 const SOURCES = ['', MIRROR];
 const delay = ms => new Promise(r => setTimeout(r, ms));
-
 async function fetchText(path) {
   let lastErr = null;
   for (let s = 0; s < SOURCES.length; s++) {
@@ -99,10 +141,17 @@ async function fetchText(path) {
   }
   throw lastErr || new Error('all sources failed');
 }
+function switchTab(name) {
+  document.getElementById('tab-report').classList.toggle('hidden', name !== 'report');
+  document.getElementById('tab-holdings').classList.toggle('hidden', name !== 'holdings');
+  document.getElementById('tabbtn-report').classList.toggle('active', name === 'report');
+  document.getElementById('tabbtn-holdings').classList.toggle('active', name === 'holdings');
+  if (name === 'holdings') initHoldings();
+}
 
+/* ═══ 报告 ═══ */
 let REPORTS = [];
 let CURRENT = null;
-
 function load() {
   fetchText('reports/index.json')
     .then(({ text }) => { const d = JSON.parse(text); REPORTS = d.reports || [];
@@ -113,7 +162,6 @@ function load() {
       document.getElementById('main').innerHTML = '<div class="empty">网络波动，刷新页面可重试</div>';
     });
 }
-
 function renderPicker() {
   const picker = document.getElementById('picker');
   if (!REPORTS.length) {
@@ -150,13 +198,11 @@ function renderPicker() {
     if (gi === 0) { CURRENT = null; chips.children[0].classList.add('active'); show(items[0]); }
   });
 }
-
 function select(r, chips, chip) {
   chips.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
   chip.classList.add('active');
   show(r);
 }
-
 async function show(r) {
   CURRENT = r;
   const main = document.getElementById('main');
@@ -180,6 +226,191 @@ async function show(r) {
   }
 }
 load();
+
+/* ═══ 持仓编辑 ═══ */
+const DATA_OWNER = 'ericheee111', DATA_REPO = 'stock-monitor-data';
+const API = 'https://api.github.com/repos/' + DATA_OWNER + '/' + DATA_REPO + '/contents/';
+const TOKEN_KEY = 'gh_data_token';
+let FILE_SHA = null, PARSED = null;
+
+const b64d = s => { const bin = atob(s.replace(/\s/g, ''));
+  return new TextDecoder().decode(Uint8Array.from(bin, c => c.charCodeAt(0))); };
+const b64e = s => { const bytes = new TextEncoder().encode(s); let bin = '';
+  bytes.forEach(b => bin += String.fromCharCode(b)); return btoa(bin); };
+const getToken = () => localStorage.getItem(TOKEN_KEY) || '';
+const ghHeaders = () => ({ 'Authorization': 'Bearer ' + getToken(), 'Accept': 'application/vnd.github+json' });
+
+async function initHoldings() {
+  const body = document.getElementById('holdings-body');
+  if (!getToken()) { body.innerHTML = tokenSetupHTML(); return; }
+  body.innerHTML = '<div class="empty">加载持仓中…</div>';
+  try {
+    const res = await fetch(API + encodeURIComponent('持仓.md'), { headers: ghHeaders(), cache: 'no-store' });
+    if (res.status === 401 || res.status === 403) {
+      localStorage.removeItem(TOKEN_KEY);
+      body.innerHTML = tokenSetupHTML('令牌无效或权限不足，请重新配置');
+      return;
+    }
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const j = await res.json();
+    FILE_SHA = j.sha;
+    PARSED = parseHoldings(b64d(j.content));
+    renderEditor();
+  } catch (e) {
+    body.innerHTML = '<div class="empty">持仓加载失败：' + (e.message || '网络波动') + '<br>请稍后重试或重新配置令牌</div>';
+  }
+}
+function tokenSetupHTML(msg) {
+  return '<div class="token-box"><h3>首次使用：配置 GitHub 令牌</h3>' +
+    (msg ? '<p style="color:var(--warn);font-size:13px">' + msg + '</p>' : '') +
+    '<ol><li>手机浏览器登录 GitHub，打开 Settings → Developer settings → <b>Fine-grained tokens</b> → Generate new token</li>' +
+    '<li>Repository access 选 <b>Only select repositories</b> → 勾选 <b>stock-monitor-data</b></li>' +
+    '<li>Permissions → Contents 设为 <b>Read and write</b>（其他一律不勾）</li>' +
+    '<li>生成后把令牌粘贴到下面（只存在本机浏览器，不会出现在公开页面代码里）</li></ol>' +
+    '<input id="token-input" type="password" placeholder="粘贴 github_pat_ 开头的令牌">' +
+    '<button class="savebtn" onclick="saveToken()">保存到本机并进入编辑</button>' +
+    '<div class="status" id="token-status"></div></div>';
+}
+function saveToken() {
+  const v = document.getElementById('token-input').value.trim();
+  if (!v.startsWith('github_pat_') && !v.startsWith('ghp_')) {
+    document.getElementById('token-status').textContent = '令牌格式不对，应以 github_pat_ 或 ghp_ 开头';
+    document.getElementById('token-status').className = 'status err';
+    return;
+  }
+  localStorage.setItem(TOKEN_KEY, v);
+  initHoldings();
+}
+function parseHoldings(md) {
+  const lines = md.split('\n');
+  const marks = ['## 一、', '## 二、', '## 三、', '## 四、'];
+  const idx = marks.map(m => lines.findIndex(l => l.startsWith(m)));
+  const pre = lines.slice(0, idx[0]).join('\n').trimEnd();
+  const tail = lines.slice(idx[3]).join('\n');
+  function grab(from, to) {
+    const seg = lines.slice(from, to === undefined ? undefined : to);
+    const title = seg[0];
+    const notes = []; const rows = []; let header = null;
+    for (const l of seg.slice(1)) {
+      if (l.startsWith('>')) { notes.push(l); continue; }
+      if (l.startsWith('|')) {
+        const cells = l.split('|').slice(1, -1).map(c => c.trim());
+        if (!header) header = cells;
+        else if (!cells.every(c => /^-{2,}$/.test(c))) rows.push(cells);
+      }
+    }
+    return { title, notes, header, rows };
+  }
+  return { pre, tail,
+    s1: grab(idx[0], idx[1]), s2: grab(idx[1], idx[2]), s3: grab(idx[2], idx[3]) };
+}
+function buildTable(sec) {
+  const out = ['| ' + sec.header.join(' | ') + ' |',
+               '|' + sec.header.map(() => '---').join('|') + '|'];
+  sec.rows.forEach(r => out.push('| ' + r.join(' | ') + ' |'));
+  return out.join('\n');
+}
+function buildMD() {
+  const secTitle = (sec, base, suffix) => '## ' + base + '（' + sec.rows.length + ' 只' + (suffix || '') + '）';
+  const s = PARSED;
+  return s.pre + '\n\n' + secTitle(s.s1, '一、A股持仓') + '\n\n' +
+    s.s1.notes.join('\n') + '\n\n' + buildTable(s.s1) + '\n\n' +
+    secTitle(s.s2, '二、港股持仓') + '\n\n' + s.s2.notes.join('\n') + '\n\n' + buildTable(s.s2) + '\n\n' +
+    secTitle(s.s3, '三、港股自选', '，非持仓') + '\n\n' + s.s3.notes.join('\n') + '\n\n' + buildTable(s.s3) + '\n\n' + s.tail + '\n';
+}
+function renderEditor() {
+  const body = document.getElementById('holdings-body');
+  body.innerHTML = '<div class="note">✏️ 直接修改下面各栏，改完点「保存」。<b>保存后下一轮扫描（工作日 10:45 / 14:20）即按新持仓分析</b>。监控流程只回写「上次信号状态」列，其余列以你保存的为准。</div>' +
+    secEditor('A股持仓', 's1') + secEditor('港股持仓', 's2') + secEditor('港股自选', 's3') +
+    '<button class="savebtn" onclick="saveHoldings()">保存全部修改</button>' +
+    '<div class="status" id="save-status"></div>';
+}
+function secEditor(label, key) {
+  const sec = PARSED[key];
+  let html = '<div class="sec-title">' + label + '（' + sec.rows.length + '）</div><div id="list-' + key + '">';
+  sec.rows.forEach((r, i) => html += rowCard(key, r, i, sec.header));
+  return html + '</div><button class="addbtn" onclick="addRow(\'' + key + '\')">＋ 添加一行</button>';
+}
+function rowCard(key, r, i, header) {
+  let fields = '';
+  header.forEach((h, ci) => {
+    const ro = (ci === 0) ? ' readonly style="color:var(--muted)"' : '';
+    fields += '<div' + (h.includes('监控') || h.includes('关注') || h.includes('备注') ? ' class="full"' : '') +
+      '><label>' + h + '</label><input data-sec="' + key + '" data-row="' + i + '" data-col="' + ci + '" value="' +
+      String(r[ci] || '').replace(/"/g, '&quot;') + '"' + ro + '></div>';
+  });
+  return '<div class="stock-card"><div class="head"><span class="name">' + (i + 1) + '. ' + (r[1] || '（未命名）') + '</span>' +
+    '<button class="del" onclick="delRow(\'' + key + '\',' + i + ')">删除</button></div>' +
+    '<div class="fields">' + fields + '</div></div>';
+}
+function syncInputs() {
+  document.querySelectorAll('input[data-sec]').forEach(inp => {
+    PARSED[inp.dataset.sec].rows[+inp.dataset.row][+inp.dataset.col] = inp.value;
+  });
+}
+function addRow(key) {
+  syncInputs();
+  const sec = PARSED[key];
+  const r = sec.header.map(() => '');
+  sec.rows.push(r);
+  refresh(key);
+}
+function delRow(key, i) {
+  syncInputs();
+  if (!confirm('确定删除这一行吗？')) return;
+  PARSED[key].rows.splice(i, 1);
+  refresh(key);
+}
+function refresh(key) {
+  syncInputs();
+  const sec = PARSED[key];
+  sec.rows.forEach((r, i) => { r[0] = String(i + 1); });
+  const label = key === 's1' ? 'A股持仓' : key === 's2' ? '港股持仓' : '港股自选';
+  const secDiv = document.querySelectorAll('#holdings-body .sec-title');
+  secDiv[{ s1: 0, s2: 1, s3: 2 }[key]].textContent = label + '（' + sec.rows.length + '）';
+  document.getElementById('list-' + key).innerHTML = sec.rows.map((r, i) => rowCard(key, r, i, sec.header)).join('');
+}
+async function saveHoldings() {
+  syncInputs();
+  ['s1', 's2', 's3'].forEach(key => {
+    PARSED[key].rows.forEach((r, i) => { r[0] = String(i + 1); });
+  });
+  const status = document.getElementById('save-status');
+  status.textContent = '保存中…'; status.className = 'status';
+  try {
+    const md = buildMD();
+    const res = await fetch(API + encodeURIComponent('持仓.md'), {
+      method: 'PUT', headers: ghHeaders(),
+      body: JSON.stringify({ message: '持仓更新（网页端 ' + new Date().toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai', hour12: false }) + '）',
+        content: b64e(md), sha: FILE_SHA })
+    });
+    if (res.status === 409 || res.status === 422) {
+      status.textContent = '远端已更新（可能扫描刚回写过状态），正在合并重试…';
+      status.className = 'status';
+      const j2 = await (await fetch(API + encodeURIComponent('持仓.md'), { headers: ghHeaders(), cache: 'no-store' })).json();
+      FILE_SHA = j2.sha;
+      const remote = parseHoldings(b64d(j2.content));
+      ['s1', 's2', 's3'].forEach(k => {
+        remote[k].rows.forEach(rr => {
+          const mine = PARSED[k].rows.find(m => m[1] === rr[1]);
+          if (mine) mine[PARSED[k].header.indexOf('上次信号状态')] = rr[PARSED[k].header.indexOf('上次信号状态')] || '';
+        });
+      });
+      const res2 = await fetch(API + encodeURIComponent('持仓.md'), {
+        method: 'PUT', headers: ghHeaders(),
+        body: JSON.stringify({ message: '持仓更新（网页端，合并状态列后重试）', content: b64e(buildMD()), sha: FILE_SHA })
+      });
+      if (!res2.ok) throw new Error('HTTP ' + res2.status);
+    } else if (!res.ok) {
+      throw new Error('HTTP ' + res.status);
+    }
+    status.textContent = '✅ 已保存。下一轮扫描（工作日 10:45 / 14:20）自动按新持仓分析；也可在对话里让我立即重扫。';
+    status.className = 'status ok';
+  } catch (e) {
+    status.textContent = '保存失败：' + (e.message || '网络波动') + '，请重试';
+    status.className = 'status err';
+  }
+}
 </script>
 </body>
 </html>
