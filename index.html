@@ -320,16 +320,23 @@ function buildMD() {
 }
 function renderEditor() {
   const body = document.getElementById('holdings-body');
-  body.innerHTML = '<div class="note">✏️ 直接修改下面各栏，改完点「保存」。<b>保存后下一轮扫描（工作日 10:45 / 14:20）即按新持仓分析</b>。监控流程只回写「上次信号状态」列，其余列以你保存的为准。</div>' +
-    secEditor('A股持仓', 's1') + secEditor('港股持仓', 's2') + secEditor('港股自选', 's3') +
+  body.innerHTML = '<div class="note">✏️ 点开分类修改各栏，改完点「保存」。<b>保存后下一轮扫描（工作日 10:45 / 14:20）即按新持仓分析</b>。监控流程只回写「上次信号状态」列，其余列以你保存的为准。</div>' +
+    secEditor('s1') + secEditor('s2') + secEditor('s3') +
     '<button class="savebtn" onclick="saveHoldings()">保存全部修改</button>' +
     '<div class="status" id="save-status"></div>';
 }
-function secEditor(label, key) {
+function secEditor(key) {
+  const label = { s1: 'A股持仓', s2: '港股持仓', s3: '港股自选' }[key];
   const sec = PARSED[key];
-  let html = '<div class="sec-title">' + label + '（' + sec.rows.length + '）</div><div id="list-' + key + '">';
-  sec.rows.forEach((r, i) => html += rowCard(key, r, i, sec.header));
-  return html + '</div><button class="addbtn" onclick="addRow(\'' + key + '\')">＋ 添加一行</button>';
+  return '<div class="dgroup' + (key === 's1' ? ' open' : '') + '" id="grp-' + key + '">' +
+    '<button class="drow" onclick="toggleGroup(\'' + key + '\')"><span class="arrow">▶</span>' +
+    '<span class="date">' + label + '</span><span class="cnt" id="cnt-' + key + '">' + sec.rows.length + ' 只</span></button>' +
+    '<div class="chips" id="body-' + key + '"><div id="list-' + key + '">' +
+    sec.rows.map((r, i) => rowCard(key, r, i, sec.header)).join('') +
+    '</div><button class="addbtn" onclick="addRow(\'' + key + '\')">＋ 添加一行</button></div></div>';
+}
+function toggleGroup(key) {
+  document.getElementById('grp-' + key).classList.toggle('open');
 }
 function rowCard(key, r, i, header) {
   let fields = '';
@@ -365,9 +372,7 @@ function refresh(key) {
   syncInputs();
   const sec = PARSED[key];
   sec.rows.forEach((r, i) => { r[0] = String(i + 1); });
-  const label = key === 's1' ? 'A股持仓' : key === 's2' ? '港股持仓' : '港股自选';
-  const secDiv = document.querySelectorAll('#holdings-body .sec-title');
-  secDiv[{ s1: 0, s2: 1, s3: 2 }[key]].textContent = label + '（' + sec.rows.length + '）';
+  document.getElementById('cnt-' + key).textContent = sec.rows.length + ' 只';
   document.getElementById('list-' + key).innerHTML = sec.rows.map((r, i) => rowCard(key, r, i, sec.header)).join('');
 }
 async function saveHoldings() {
