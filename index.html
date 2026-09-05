@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A股和港股每日双时段交易机会监控报告</title>
+<script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+<style>
+  :root {
+    --bg: #f5f6f8; --card: #ffffff; --text: #1f2328; --muted: #656d76;
+    --border: #d8dee4; --accent: #185fa5; --accent-soft: #e6f1fb;
+    --red: #a32d2d; --green: #1d7a3d;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text);
+    font-family: "Segoe UI", "Microsoft YaHei", system-ui, sans-serif; font-size: 15px; line-height: 1.7; }
+  header { background: var(--card); border-bottom: 1px solid var(--border);
+    padding: 18px 24px; display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+  header h1 { font-size: 19px; font-weight: 600; }
+  header .sub { color: var(--muted); font-size: 13px; }
+  .wrap { max-width: 1180px; margin: 20px auto; padding: 0 16px; display: flex; gap: 18px; align-items: flex-start; }
+  aside { width: 300px; flex-shrink: 0; background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 14px; position: sticky; top: 16px; max-height: calc(100vh - 40px); overflow-y: auto; }
+  aside h2 { font-size: 13px; color: var(--muted); font-weight: 600; margin-bottom: 10px; letter-spacing: .04em; }
+  .item { display: block; width: 100%; text-align: left; background: none; border: 1px solid transparent;
+    border-radius: 8px; padding: 9px 11px; cursor: pointer; font: inherit; color: var(--text); margin-bottom: 4px; }
+  .item:hover { background: var(--bg); }
+  .item.active { background: var(--accent-soft); border-color: var(--accent); }
+  .item .t { font-size: 14px; font-weight: 500; }
+  .item .d { font-size: 12px; color: var(--muted); }
+  .badge { display: inline-block; font-size: 11px; padding: 1px 7px; border-radius: 10px; margin-left: 6px; vertical-align: 1px; }
+  .badge.am { background: #eaf3de; color: #3b6d11; }
+  .badge.pm { background: #e6f1fb; color: #185fa5; }
+  main { flex: 1; min-width: 0; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 28px 32px; }
+  .empty { color: var(--muted); text-align: center; padding: 60px 20px; }
+  .md h1 { font-size: 20px; margin: 4px 0 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+  .md h2 { font-size: 17px; margin: 22px 0 10px; }
+  .md h3 { font-size: 15px; margin: 18px 0 8px; }
+  .md p, .md li { font-size: 14.5px; }
+  .md table { border-collapse: collapse; width: 100%; margin: 12px 0; font-size: 13px; display: block; overflow-x: auto; }
+  .md th, .md td { border: 1px solid var(--border); padding: 6px 10px; text-align: left; }
+  .md th { background: var(--bg); }
+  .md blockquote { border-left: 3px solid var(--accent); background: var(--accent-soft);
+    padding: 10px 14px; margin: 12px 0; border-radius: 0 8px 8px 0; color: var(--text); }
+  .md code { background: var(--bg); border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; font-size: 13px; }
+  .md hr { border: none; border-top: 1px solid var(--border); margin: 18px 0; }
+  footer { text-align: center; color: var(--muted); font-size: 12px; padding: 10px 16px 26px; }
+  @media (max-width: 860px) { .wrap { flex-direction: column; } aside { width: 100%; position: static; max-height: none; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>A股和港股每日双时段交易机会监控报告</h1>
+  <span class="sub" id="updated"></span>
+</header>
+<div class="wrap">
+  <aside>
+    <h2>报告列表</h2>
+    <div id="list"><div class="empty" style="padding:16px">加载中…</div></div>
+  </aside>
+  <main id="main">
+    <div class="empty">选择左侧任意一份报告查看。<br>暂无报告时，说明监控任务尚未发布新内容。</div>
+  </main>
+</div>
+<footer>
+  所有信号均由 AI 基于公开信息生成，仅供研究参考，不构成投资建议；入场前需在券商实时行情中再次确认。本站不自动执行交易。
+</footer>
+<script>
+const REPO = 'reports/';
+function load() {
+  fetch(REPO + 'index.json', { cache: 'no-store' })
+    .then(r => { if (!r.ok) throw new Error('no index'); return r.json(); })
+    .then(data => render(data))
+    .catch(() => {
+      document.getElementById('list').innerHTML =
+        '<div class="empty" style="padding:16px">暂无报告</div>';
+      document.getElementById('updated').textContent = '';
+    });
+}
+function render(data) {
+  const list = document.getElementById('list');
+  const reports = (data.reports || []).slice().sort((a, b) => b.date.localeCompare(a.date) || (b.session === 'am' ? -1 : 1) - (a.session === 'am' ? -1 : 1));
+  if (!reports.length) {
+    list.innerHTML = '<div class="empty" style="padding:16px">暂无报告<br><span style="font-size:12px">监控任务运行后会自动发布到这里</span></div>';
+  } else {
+    list.innerHTML = '';
+    reports.forEach((r, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'item' + (i === 0 ? ' active' : '');
+      btn.innerHTML = '<div class="t">' + r.date + ' <span class="badge ' + (r.session === 'am' ? 'am">上午' : 'pm">下午') + '</span></div>' +
+        '<div class="d">' + (r.title || '') + '</div>';
+      btn.onclick = () => { document.querySelectorAll('.item').forEach(e => e.classList.remove('active')); btn.classList.add('active'); show(r); };
+      list.appendChild(btn);
+    });
+    show(reports[0]);
+  }
+  document.getElementById('updated').textContent = data.generatedAt ? ('更新于 ' + data.generatedAt) : '';
+}
+function show(r) {
+  const main = document.getElementById('main');
+  main.innerHTML = '<div class="empty">加载中…</div>';
+  fetch(REPO + r.file, { cache: 'no-store' })
+    .then(res => { if (!res.ok) throw new Error('load fail'); return res.text(); })
+    .then(md => { main.innerHTML = '<div class="md">' + marked.parse(md) + '</div>'; })
+    .catch(() => { main.innerHTML = '<div class="empty">报告文件加载失败：' + r.file + '</div>'; });
+}
+load();
+</script>
+</body>
+</html>

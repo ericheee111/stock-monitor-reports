@@ -1,0 +1,34 @@
+{
+  "generatedAt": "2026-09-05 12:20",
+  "note": "2026-09-05 之前的报告由运行记录恢复存档；此后每轮扫描自动发布完整版。",
+  "reports": [
+    {
+      "date": "2026-09-03",
+      "session": "am",
+      "file": "reports/2026-09-03-am.md",
+      "title": "A股震荡轮动｜当日无已触发信号",
+      "archived": false
+    },
+    {
+      "date": "2026-09-03",
+      "session": "pm",
+      "file": "reports/2026-09-03-pm.md",
+      "title": "缩量防御｜太保/新华保险H两只B级可小仓试仓",
+      "archived": true
+    },
+    {
+      "date": "2026-09-04",
+      "session": "am",
+      "file": "reports/2026-09-04-am.md",
+      "title": "A股震荡轮动（10:36快照）",
+      "archived": true
+    },
+    {
+      "date": "2026-09-04",
+      "session": "pm",
+      "file": "reports/2026-09-04-pm.md",
+      "title": "A股转情绪分歧，较上午走弱",
+      "archived": true
+    }
+  ]
+}
