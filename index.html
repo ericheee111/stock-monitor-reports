@@ -283,10 +283,10 @@ function saveToken() {
 }
 function parseHoldings(md) {
   const lines = md.split('\n');
-  const marks = ['## 一、', '## 二、', '## 三、', '## 四、'];
+  const marks = ['## 一、', '## 二、', '## 三、', '## 四、', '## 五、'];
   const idx = marks.map(m => lines.findIndex(l => l.startsWith(m)));
   const pre = lines.slice(0, idx[0]).join('\n').trimEnd();
-  const tail = lines.slice(idx[3]).join('\n');
+  const tail = lines.slice(idx[4]).join('\n');
   function grab(from, to) {
     const seg = lines.slice(from, to === undefined ? undefined : to);
     const title = seg[0];
@@ -302,7 +302,8 @@ function parseHoldings(md) {
     return { title, notes, header, rows };
   }
   return { pre, tail,
-    s1: grab(idx[0], idx[1]), s2: grab(idx[1], idx[2]), s3: grab(idx[2], idx[3]) };
+    s1: grab(idx[0], idx[1]), s2: grab(idx[1], idx[2]),
+    s3: grab(idx[2], idx[3]), s4: grab(idx[3], idx[4]) };
 }
 function buildTable(sec) {
   const out = ['| ' + sec.header.join(' | ') + ' |',
@@ -313,25 +314,29 @@ function buildTable(sec) {
 function buildMD() {
   const secTitle = (sec, base, suffix) => '## ' + base + '（' + sec.rows.length + ' 只' + (suffix || '') + '）';
   const s = PARSED;
-  return s.pre + '\n\n' + secTitle(s.s1, '一、A股持仓') + '\n\n' +
-    s.s1.notes.join('\n') + '\n\n' + buildTable(s.s1) + '\n\n' +
-    secTitle(s.s2, '二、港股持仓') + '\n\n' + s.s2.notes.join('\n') + '\n\n' + buildTable(s.s2) + '\n\n' +
-    secTitle(s.s3, '三、港股自选', '，非持仓') + '\n\n' + s.s3.notes.join('\n') + '\n\n' + buildTable(s.s3) + '\n\n' + s.tail + '\n';
+  const part = (sec, base, suffix) => secTitle(sec, base, suffix) + '\n\n' +
+    (sec.notes.length ? sec.notes.join('\n') + '\n\n' : '') + buildTable(sec);
+  return s.pre + '\n\n' +
+    part(s.s1, '一、A股持仓') + '\n\n' +
+    part(s.s2, '二、A股自选', '，非持仓') + '\n\n' +
+    part(s.s3, '三、港股持仓') + '\n\n' +
+    part(s.s4, '四、港股自选', '，非持仓') + '\n\n' + s.tail + '\n';
 }
 function renderEditor() {
   const body = document.getElementById('holdings-body');
   body.innerHTML = '<div class="note">✏️ 点开分类修改各栏，改完点「保存」。<b>保存后下一轮扫描（工作日 10:45 / 14:20）即按新持仓分析</b>。监控流程只回写「上次信号状态」列，其余列以你保存的为准。</div>' +
-    secEditor('s1') + secEditor('s2') + secEditor('s3') +
+    secEditor('s1') + secEditor('s2') + secEditor('s3') + secEditor('s4') +
     '<button class="savebtn" onclick="saveHoldings()">保存全部修改</button>' +
     '<div class="status" id="save-status"></div>';
 }
 function secEditor(key) {
-  const label = { s1: 'A股持仓', s2: '港股持仓', s3: '港股自选' }[key];
+  const label = { s1: 'A股持仓', s2: 'A股自选', s3: '港股持仓', s4: '港股自选' }[key];
   const sec = PARSED[key];
+  const empty = sec.rows.length ? '' : '<div class="empty" style="padding:6px">暂无标的，点下方「添加一行」</div>';
   return '<div class="dgroup' + (key === 's1' ? ' open' : '') + '" id="grp-' + key + '">' +
     '<button class="drow" onclick="toggleGroup(\'' + key + '\')"><span class="arrow">▶</span>' +
     '<span class="date">' + label + '</span><span class="cnt" id="cnt-' + key + '">' + sec.rows.length + ' 只</span></button>' +
-    '<div class="chips" id="body-' + key + '"><div id="list-' + key + '">' +
+    '<div class="chips" id="body-' + key + '"><div id="list-' + key + '">' + empty +
     sec.rows.map((r, i) => rowCard(key, r, i, sec.header)).join('') +
     '</div><button class="addbtn" onclick="addRow(\'' + key + '\')">＋ 添加一行</button></div></div>';
 }
@@ -377,7 +382,7 @@ function refresh(key) {
 }
 async function saveHoldings() {
   syncInputs();
-  ['s1', 's2', 's3'].forEach(key => {
+  ['s1', 's2', 's3', 's4'].forEach(key => {
     PARSED[key].rows.forEach((r, i) => { r[0] = String(i + 1); });
   });
   const status = document.getElementById('save-status');
@@ -395,7 +400,7 @@ async function saveHoldings() {
       const j2 = await (await fetch(API + encodeURIComponent('持仓.md'), { headers: ghHeaders(), cache: 'no-store' })).json();
       FILE_SHA = j2.sha;
       const remote = parseHoldings(b64d(j2.content));
-      ['s1', 's2', 's3'].forEach(k => {
+      ['s1', 's2', 's3', 's4'].forEach(k => {
         remote[k].rows.forEach(rr => {
           const mine = PARSED[k].rows.find(m => m[1] === rr[1]);
           if (mine) mine[PARSED[k].header.indexOf('上次信号状态')] = rr[PARSED[k].header.indexOf('上次信号状态')] || '';
