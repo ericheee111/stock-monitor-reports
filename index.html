@@ -357,28 +357,34 @@ function rowCard(key, r, i, header) {
 }
 function syncInputs() {
   document.querySelectorAll('input[data-sec]').forEach(inp => {
-    PARSED[inp.dataset.sec].rows[+inp.dataset.row][+inp.dataset.col] = inp.value;
+    const sec = PARSED[inp.dataset.sec];
+    const row = sec.rows[+inp.dataset.row];
+    if (row) row[+inp.dataset.col] = inp.value;
   });
 }
 function addRow(key) {
   syncInputs();
   const sec = PARSED[key];
-  const r = sec.header.map(() => '');
-  sec.rows.push(r);
-  refresh(key);
+  sec.rows.push(sec.header.map(() => ''));
+  renderList(key);
 }
 function delRow(key, i) {
   syncInputs();
   if (!confirm('确定删除这一行吗？')) return;
   PARSED[key].rows.splice(i, 1);
-  refresh(key);
+  renderList(key);
 }
-function refresh(key) {
-  syncInputs();
+function renderList(key) {
   const sec = PARSED[key];
   sec.rows.forEach((r, i) => { r[0] = String(i + 1); });
   document.getElementById('cnt-' + key).textContent = sec.rows.length + ' 只';
-  document.getElementById('list-' + key).innerHTML = sec.rows.map((r, i) => rowCard(key, r, i, sec.header)).join('');
+  const empty = sec.rows.length ? '' : '<div class="empty" style="padding:6px">暂无标的，点下方「添加一行」</div>';
+  document.getElementById('list-' + key).innerHTML = empty +
+    sec.rows.map((r, i) => rowCard(key, r, i, sec.header)).join('');
+}
+function refresh(key) {
+  syncInputs();
+  renderList(key);
 }
 async function saveHoldings() {
   syncInputs();
