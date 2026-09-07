@@ -1,7 +1,14 @@
 {
-  "generatedAt": "2026-09-05 12:20",
+  "generatedAt": "2026-09-07 10:50",
   "note": "2026-09-05 之前的报告由运行记录恢复存档；此后每轮扫描自动发布完整版。",
   "reports": [
+    {
+      "date": "2026-09-07",
+      "session": "am",
+      "file": "reports/2026-09-07-am.md",
+      "title": "A股高低切至AI硬件与农业｜无信号触发",
+      "archived": false
+    },
     {
       "date": "2026-09-03",
       "session": "am",
