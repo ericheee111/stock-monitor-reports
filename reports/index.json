@@ -1,7 +1,14 @@
 {
-  "generatedAt": "2026-09-09 10:12",
+  "generatedAt": "2026-09-09 10:52",
   "note": "2026-09-05 之前的报告由运行记录恢复存档；此后每轮扫描自动发布完整版。",
   "reports": [
+    {
+      "date": "2026-09-09",
+      "session": "am",
+      "file": "reports/2026-09-09-am.md",
+      "title": "AI硬件扩散｜巨石75分待突破",
+      "archived": false
+    },
     {
       "date": "2026-09-09",
       "session": "pm",
