@@ -35,17 +35,22 @@
   .drow { width: 100%; display: flex; align-items: center; gap: 8px; padding: 13px 16px;
     background: none; border: none; font: inherit; cursor: pointer; text-align: left; }
   .drow:active { background: var(--bg); }
-  .drow .arrow { color: var(--muted); font-size: 12px; transition: transform .15s; }
+  .drow .arrow { color: var(--muted); font-size: 12px; transition: transform .25s ease; }
   .dgroup.open .drow .arrow { transform: rotate(90deg); }
   .drow .date { font-weight: 600; font-size: 15px; }
   .drow .cnt { color: var(--muted); font-size: 12px; margin-left: auto; }
-  .chips { display: none; padding: 2px 12px 12px; gap: 8px; flex-direction: column; }
-  .dgroup.open .chips { display: flex; }
+  .chips { display: grid; grid-template-rows: 0fr; padding: 0 12px;
+    transition: grid-template-rows .28s ease, padding .28s ease; }
+  .chips-inner { min-height: 0; overflow: hidden; display: flex; flex-direction: column; gap: 8px; }
+  .dgroup.open .chips { grid-template-rows: 1fr; padding-top: 2px; padding-bottom: 12px; }
   .chip { display: flex; align-items: center; gap: 8px; width: 100%; text-align: left;
     border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px;
-    background: var(--bg); font: inherit; cursor: pointer; }
+    background: var(--bg); font: inherit; cursor: pointer;
+    transition: background .15s ease, border-color .15s ease; }
   .chip:active { background: var(--accent-soft); }
   .chip.active { background: var(--accent-soft); border-color: var(--accent); }
+  .tab { transition: color .15s ease, border-color .15s ease; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
   .tag { flex-shrink: 0; font-size: 12px; padding: 2px 9px; border-radius: 10px; }
   .tag.am { background: var(--am-bg); color: var(--am-tx); }
   .tag.pm { background: var(--pm-bg); color: var(--pm-tx); }
@@ -183,12 +188,15 @@ function renderPicker() {
     row.innerHTML = '<span class="arrow">▶</span><span class="date">' + date + '</span><span class="cnt">' + items.length + ' 篇</span>';
     const chips = document.createElement('div');
     chips.className = 'chips';
+    const inner = document.createElement('div');
+    inner.className = 'chips-inner';
+    chips.appendChild(inner);
     items.forEach(r => {
       const chip = document.createElement('button');
       chip.className = 'chip';
       chip.innerHTML = '<span class="tag ' + (r.session === 'am' ? 'am">上午' : 'pm">下午') + '</span><span class="t">' + (r.title || '') + '</span>';
-      chip.onclick = () => select(r, chips, chip);
-      chips.appendChild(chip);
+      chip.onclick = () => select(r, inner, chip);
+      inner.appendChild(chip);
     });
     row.onclick = () => {
       const wasOpen = group.classList.contains('open');
@@ -197,19 +205,22 @@ function renderPicker() {
     };
     group.appendChild(row); group.appendChild(chips);
     picker.appendChild(group);
-    if (gi === 0) { CURRENT = null; chips.children[0].classList.add('active'); show(items[0]); }
+    if (gi === 0) {
+      CURRENT = null;
+      inner.children[0].classList.add('active');
+      show(items[0], { scrollInto: true });
+    }
   });
 }
-function select(r, chips, chip) {
-  chips.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+function select(r, inner, chip) {
+  inner.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
   chip.classList.add('active');
-  show(r);
+  show(r, { scrollInto: true });
 }
-async function show(r) {
+async function show(r, opts) {
   CURRENT = r;
   const main = document.getElementById('main');
   main.innerHTML = '<div class="empty">加载中…</div>';
-  window.scrollTo({ top: 0, behavior: 'smooth' });
   try {
     const { text, via } = await fetchText(r.file);
     if (CURRENT !== r) return;
@@ -219,6 +230,9 @@ async function show(r) {
       tip.className = 'via-tip';
       tip.textContent = '（主源暂时不可达，本报告经备用镜像提供，内容可能滞后最多 12 小时）';
       main.appendChild(tip);
+    }
+    if (opts && opts.scrollInto && main.getBoundingClientRect().top < 0) {
+      main.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   } catch (e) {
     if (CURRENT !== r) return;
@@ -263,15 +277,18 @@ async function initHoldings() {
   }
 }
 function tokenSetupHTML(msg) {
-  return '<div class="token-box"><h3>首次使用：配置 GitHub 令牌</h3>' +
+  const hasToken = !!getToken();
+  return '<div class="token-box"><h3>配置 GitHub 令牌</h3>' +
     (msg ? '<p style="color:var(--warn);font-size:13px">' + msg + '</p>' : '') +
+    (hasToken ? '<p style="font-size:12px;color:var(--ok)">已检测到令牌（仅存在本机浏览器）。如需更换或撤销，请粘贴新令牌覆盖或点击下方清除。</p>' : '') +
     '<ol><li>手机浏览器登录 GitHub，打开 Settings → Developer settings → <b>Fine-grained tokens</b> → Generate new token</li>' +
     '<li>Repository access 选 <b>Only select repositories</b> → 勾选 <b>stock-monitor-data</b></li>' +
     '<li>Permissions → Contents 设为 <b>Read and write</b>（其他一律不勾）</li>' +
-    '<li>生成后把令牌粘贴到下面（只存在本机浏览器，不会出现在公开页面代码里）</li></ol>' +
+    '<li>把令牌粘贴到下面（只存在本机浏览器，不会出现在公开页面代码里）</li></ol>' +
     '<input id="token-input" type="password" placeholder="粘贴 github_pat_ 开头的令牌">' +
-    '<button class="savebtn" onclick="saveToken()">保存到本机并进入编辑</button>' +
-    '<div class="status" id="token-status"></div></div>';
+    '<div style="display:flex;gap:8px"><button class="savebtn" style="flex:1" onclick="saveToken()">保存令牌并进入编辑</button>' +
+    (hasToken ? '<button class="savebtn" style="flex:1;background:var(--warn);border-color:var(--warn)" onclick="clearToken()">清除令牌</button>' : '') +
+    '</div><div class="status" id="token-status"></div></div>';
 }
 function saveToken() {
   const v = document.getElementById('token-input').value.trim();
@@ -282,6 +299,10 @@ function saveToken() {
   }
   localStorage.setItem(TOKEN_KEY, v);
   initHoldings();
+}
+function clearToken() {
+  localStorage.removeItem(TOKEN_KEY);
+  document.getElementById('holdings-body').innerHTML = tokenSetupHTML('已清除本机令牌');
 }
 function parseHoldings(md) {
   const lines = md.split('\n');
@@ -338,9 +359,9 @@ function secEditor(key) {
   return '<div class="dgroup' + (key === 's1' ? ' open' : '') + '" id="grp-' + key + '">' +
     '<button class="drow" onclick="toggleGroup(\'' + key + '\')"><span class="arrow">▶</span>' +
     '<span class="date">' + label + '</span><span class="cnt" id="cnt-' + key + '">' + sec.rows.length + ' 只</span></button>' +
-    '<div class="chips" id="body-' + key + '"><div id="list-' + key + '">' + empty +
+    '<div class="chips" id="body-' + key + '"><div class="chips-inner"><div id="list-' + key + '">' + empty +
     sec.rows.map((r, i) => rowCard(key, r, i, sec.header)).join('') +
-    '</div><button class="addbtn" onclick="addRow(\'' + key + '\')">＋ 添加一行</button></div></div>';
+    '</div><button class="addbtn" onclick="addRow(\'' + key + '\')">＋ 添加一行</button></div></div></div>';
 }
 function toggleGroup(key) {
   document.getElementById('grp-' + key).classList.toggle('open');
