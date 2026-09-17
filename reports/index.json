@@ -1,7 +1,13 @@
 {
-  "generatedAt": "2026-09-17 10:37",
+  "generatedAt": "2026-09-17 14:20",
   "note": "2026-09-05 之前的报告由运行记录恢复存档；此后每轮扫描自动发布完整版。",
   "reports": [
+    {
+      "date": "2026-09-17",
+      "session": "pm",
+      "file": "reports/2026-09-17-pm.md",
+      "title": "覆铜板崩塌电子布分歧｜无达标信号"
+    },
     {
       "date": "2026-09-17",
       "session": "am",
@@ -58,16 +64,16 @@
     },
     {
       "date": "2026-09-09",
-      "session": "am",
-      "file": "reports/2026-09-09-am.md",
-      "title": "AI硬件扩散｜巨石75分待突破",
+      "session": "pm",
+      "file": "reports/2026-09-09-pm.md",
+      "title": "AI硬件扩散｜生益83分转不追高",
       "archived": false
     },
     {
       "date": "2026-09-09",
-      "session": "pm",
-      "file": "reports/2026-09-09-pm.md",
-      "title": "AI硬件扩散｜生益83分转不追高",
+      "session": "am",
+      "file": "reports/2026-09-09-am.md",
+      "title": "AI硬件扩散｜巨石75分待突破",
       "archived": false
     },
     {
@@ -92,17 +98,10 @@
       "archived": false
     },
     {
-      "date": "2026-09-03",
-      "session": "am",
-      "file": "reports/2026-09-03-am.md",
-      "title": "A股震荡轮动｜当日无已触发信号",
-      "archived": false
-    },
-    {
-      "date": "2026-09-03",
+      "date": "2026-09-04",
       "session": "pm",
-      "file": "reports/2026-09-03-pm.md",
-      "title": "缩量防御｜太保/新华保险H两只B级可小仓试仓",
+      "file": "reports/2026-09-04-pm.md",
+      "title": "A股转情绪分歧，较上午走弱",
       "archived": true
     },
     {
@@ -113,11 +112,18 @@
       "archived": true
     },
     {
-      "date": "2026-09-04",
+      "date": "2026-09-03",
       "session": "pm",
-      "file": "reports/2026-09-04-pm.md",
-      "title": "A股转情绪分歧，较上午走弱",
+      "file": "reports/2026-09-03-pm.md",
+      "title": "缩量防御｜太保/新华保险H两只B级可小仓试仓",
       "archived": true
+    },
+    {
+      "date": "2026-09-03",
+      "session": "am",
+      "file": "reports/2026-09-03-am.md",
+      "title": "A股震荡轮动｜当日无已触发信号",
+      "archived": false
     }
   ]
 }
