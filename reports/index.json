@@ -1,7 +1,13 @@
 {
-  "generatedAt": "2026-10-27T10:55:20+08:00",
+  "generatedAt": "2026-10-27T14:35:00+08:00",
   "note": "2026-09-05 之前的报告由运行记录恢复存档；此后每轮扫描自动发布完整版。",
   "reports": [
+    {
+      "date": "2026-10-27",
+      "session": "pm",
+      "file": "reports/2026-10-27-pm.md",
+      "title": "午后恶化宽度15%｜仓位5-10%"
+    },
     {
       "date": "2026-10-27",
       "session": "am",
@@ -361,13 +367,6 @@
       "session": "am",
       "file": "reports/2026-09-04-am.md",
       "title": "A股震荡轮动（10:36快照）",
-      "archived": true
-    },
-    {
-      "date": "2026-09-03",
-      "session": "pm",
-      "file": "reports/2026-09-03-pm.md",
-      "title": "缩量防御｜太保/新华保险H两只B级可小仓试仓",
       "archived": true
     }
   ]
