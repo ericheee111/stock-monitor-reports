@@ -1,7 +1,13 @@
 {
-  "generatedAt": "2026-11-02T14:45:00+08:00",
+  "generatedAt": "2026-11-05T11:09:58+08:00",
   "note": "2026-09-05 之前的报告由运行记录恢复存档；此后每轮扫描自动发布完整版。",
   "reports": [
+    {
+      "date": "2026-11-05",
+      "session": "am",
+      "file": "reports/2026-11-05-am.md",
+      "title": "恐慌修复86%宽度｜光伏映射"
+    },
     {
       "date": "2026-11-02",
       "session": "pm",
@@ -360,13 +366,6 @@
       "file": "reports/2026-09-07-am.md",
       "title": "A股高低切至AI硬件与农业｜无信号触发",
       "archived": false
-    },
-    {
-      "date": "2026-09-04",
-      "session": "pm",
-      "file": "reports/2026-09-04-pm.md",
-      "title": "A股转情绪分歧，较上午走弱",
-      "archived": true
     }
   ]
 }
