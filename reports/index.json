@@ -1,7 +1,13 @@
 {
-  "generatedAt": "2026-11-05T14:37:13+08:00",
+  "generatedAt": "2026-11-06T10:51:28+08:00",
   "note": "2026-09-05 之前的报告由运行记录恢复存档；此后每轮扫描自动发布完整版。",
   "reports": [
+    {
+      "date": "2026-11-06",
+      "session": "am",
+      "file": "reports/2026-11-06-am.md",
+      "title": "外围AI抛售｜恐慌修复零信号"
+    },
     {
       "date": "2026-11-05",
       "session": "pm",
@@ -357,13 +363,6 @@
       "session": "am",
       "file": "reports/2026-09-08-am.md",
       "title": "A股震荡轮动｜食糖涨价链首日爆发",
-      "archived": false
-    },
-    {
-      "date": "2026-09-07",
-      "session": "pm",
-      "file": "reports/2026-09-07-pm.md",
-      "title": "AI硬件午后加速｜生益81分待突破",
       "archived": false
     }
   ]
