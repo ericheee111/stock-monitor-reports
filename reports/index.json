@@ -1,7 +1,13 @@
 {
-  "generatedAt": "2026-11-06T14:30:35+08:00",
+  "generatedAt": "2026-11-09T10:56:48+08:00",
   "note": "2026-09-05 之前的报告由运行记录恢复存档；此后每轮扫描自动发布完整版。",
   "reports": [
+    {
+      "date": "2026-11-09",
+      "session": "am",
+      "file": "reports/2026-11-09-am.md",
+      "title": "恐慌修复｜商业航天链启动零信号"
+    },
     {
       "date": "2026-11-06",
       "session": "pm",
@@ -355,13 +361,6 @@
       "session": "pm",
       "file": "reports/2026-09-09-pm.md",
       "title": "AI硬件扩散｜生益83分转不追高",
-      "archived": false
-    },
-    {
-      "date": "2026-09-09",
-      "session": "am",
-      "file": "reports/2026-09-09-am.md",
-      "title": "AI硬件扩散｜巨石75分待突破",
       "archived": false
     }
   ]
