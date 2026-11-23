@@ -45,6 +45,12 @@
   .dgroup.open .chips { grid-template-rows: 1fr; padding-top: 2px; padding-bottom: 12px; }
   /* ── 日期筛选栏 ── */
   .filterbar { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+  .mkt { display: inline-flex; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: var(--card); }
+  .mktbtn { border: none; background: transparent; font: inherit; font-size: 13px; color: var(--muted);
+    padding: 9px 14px; cursor: pointer; transition: background .15s ease, color .15s ease; }
+  .mktbtn + .mktbtn { border-left: 1px solid var(--border); }
+  .mktbtn.active { background: var(--accent); color: #fff; font-weight: 600; }
+  .tag.us { background: #faeeda; color: #854f0b; }
   .datebtn { display: inline-flex; align-items: center; gap: 7px; border: 1px solid var(--border);
     background: var(--card); border-radius: 10px; padding: 9px 13px; font: inherit; font-size: 14px;
     color: var(--text); cursor: pointer; transition: border-color .15s ease; }
@@ -164,6 +170,10 @@
 <div class="wrap">
   <div id="tab-report">
     <div class="filterbar">
+      <div class="mkt" id="mktSwitch">
+        <button class="mktbtn active" id="mkt-cn" onclick="switchMarket('cn')">A股港股</button>
+        <button class="mktbtn" id="mkt-us" onclick="switchMarket('us')">美股</button>
+      </div>
       <button class="datebtn" id="dateBtn" onclick="toggleCalendar()" aria-haspopup="dialog">
         <span>📅</span><span id="dateBtnLabel">最新报告</span><span class="caret">▾</span>
       </button>
@@ -225,11 +235,13 @@ function switchTab(name) {
 let REPORTS = [];
 let CURRENT = null;
 let SELECTED_DATE = null;   /* null = 未筛选（默认展示最新日期） */
-let DATE_COUNTS = {};       /* {'2026-09-15': 2} ← 日历角标数据源 */
+let SELECTED_MARKET = 'cn'; /* 'cn' = A股港股；'us' = 美股 */
+let DATE_COUNTS = {};       /* {'2026-09-15': 2} ← 日历角标数据源（按当前市场聚合） */
 let CAL_MONTH = null;
 
 const esc = s => String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;')
   .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+const marketOf = r => r.market || 'cn';
 
 function load() {
   fetchText('reports/index.json')
@@ -247,10 +259,13 @@ function load() {
 }
 function buildDateCounts() {
   DATE_COUNTS = {};
-  REPORTS.forEach(r => { DATE_COUNTS[r.date] = (DATE_COUNTS[r.date] || 0) + 1; });
+  marketReports().forEach(r => { DATE_COUNTS[r.date] = (DATE_COUNTS[r.date] || 0) + 1; });
+}
+function marketReports() {
+  return REPORTS.filter(r => marketOf(r) === SELECTED_MARKET);
 }
 function sortedReports() {
-  return REPORTS.slice().sort((a, b) =>
+  return marketReports().slice().sort((a, b) =>
     b.date.localeCompare(a.date) || (a.session === 'pm' ? -1 : 1) - (b.session === 'pm' ? -1 : 1));
 }
 function latestDate() {
@@ -259,11 +274,33 @@ function latestDate() {
 }
 function activeDate() { return SELECTED_DATE || latestDate(); }
 function dateItems(date) { return sortedReports().filter(r => r.date === date); }
+function tagHTML(r) {
+  if (marketOf(r) === 'us') {
+    return '<span class="tag us">' + (r.session === 'am' ? '美股·早' : '美股·晚') + '</span>';
+  }
+  return '<span class="tag ' + (r.session === 'am' ? 'am">上午' : 'pm">下午') + '</span>';
+}
+function switchMarket(m) {
+  SELECTED_MARKET = m;
+  SELECTED_DATE = null;
+  CAL_MONTH = null;
+  document.getElementById('mkt-cn').classList.toggle('active', m === 'cn');
+  document.getElementById('mkt-us').classList.toggle('active', m === 'us');
+  buildDateCounts();
+  renderPicker();
+}
 
 function renderPicker() {
   const picker = document.getElementById('picker');
-  if (!REPORTS.length) {
-    picker.innerHTML = '<div class="empty" style="padding:14px">暂无报告，监控任务运行后会自动发布</div>';
+  const emptyMsg = SELECTED_MARKET === 'us'
+    ? '暂无美股报告，美股监控任务（收盘版 08:30 / 盘前版 20:30）运行后会自动发布'
+    : '暂无报告，监控任务运行后会自动发布';
+  if (!marketReports().length) {
+    picker.innerHTML = '<div class="empty" style="padding:14px">' + emptyMsg + '</div>';
+    document.getElementById('main').innerHTML = '<div class="empty">' + emptyMsg + '</div>';
+    document.getElementById('dateBtnLabel').textContent = '最新报告';
+    document.getElementById('clearBtn').classList.add('hidden');
+    document.getElementById('filterInfo').textContent = '';
     return;
   }
   const date = activeDate();
@@ -272,7 +309,7 @@ function renderPicker() {
   picker.innerHTML = items.map((r, i) =>
     '<button class="rrow" id="rrow-' + i + '" onclick="selectByIdx(' + i + ')">' +
       '<span class="rdate">' + md + '</span>' +
-      '<span class="tag ' + (r.session === 'am' ? 'am">上午' : 'pm">下午') + '</span>' +
+      tagHTML(r) +
       '<span class="rt">' + esc(r.title || '') + '</span>' +
       (r.archived ? '<span class="rarch">存档</span>' : '') +
     '</button>').join('');
@@ -293,7 +330,8 @@ function updateFilterUI(date, count) {
   document.getElementById('dateBtnLabel').textContent =
     SELECTED_DATE ? (SELECTED_DATE.slice(5) + ' 的报告') : '最新报告';
   document.getElementById('clearBtn').classList.toggle('hidden', !SELECTED_DATE);
-  document.getElementById('filterInfo').textContent = date + ' · ' + count + ' 篇';
+  document.getElementById('filterInfo').textContent =
+    (SELECTED_MARKET === 'us' ? '美股 · ' : 'A股港股 · ') + date + ' · ' + count + ' 篇';
 }
 
 /* ── 日历 ── */
