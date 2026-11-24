@@ -1,7 +1,14 @@
 {
-  "generatedAt": "2026-11-24T14:20:00+08:00",
+  "generatedAt": "2026-11-24T20:31:43+08:00",
   "note": "2026-09-05 之前的报告由运行记录恢复存档；此后每轮扫描自动发布完整版。",
   "reports": [
+    {
+      "date": "2026-11-24",
+      "session": "pm",
+      "market": "us",
+      "file": "reports/2026-11-24-us-pm.md",
+      "title": "NVDA盘前回吐5.7%｜零信号"
+    },
     {
       "date": "2026-11-24",
       "session": "pm",
@@ -357,12 +364,6 @@
       "session": "am",
       "file": "reports/2026-09-18-am.md",
       "title": "半导体全链爆发｜无达标信号"
-    },
-    {
-      "date": "2026-09-17",
-      "session": "pm",
-      "file": "reports/2026-09-17-pm.md",
-      "title": "覆铜板崩塌电子布分歧｜无达标信号"
     }
   ]
 }
