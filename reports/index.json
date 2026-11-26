@@ -1,7 +1,14 @@
 {
-  "generatedAt": "2026-11-25T20:30:00+08:00",
+  "generatedAt": "2026-11-26T08:23:14+08:00",
   "note": "2026-09-05 之前的报告由运行记录恢复存档；此后每轮扫描自动发布完整版。",
   "reports": [
+    {
+      "date": "2026-11-25",
+      "session": "am",
+      "market": "us",
+      "file": "reports/2026-11-25-us-am.md",
+      "title": "深V反转·零信号｜警惕NVDA"
+    },
     {
       "date": "2026-11-25",
       "session": "pm",
@@ -359,12 +366,6 @@
       "session": "pm",
       "file": "reports/2026-09-22-pm.md",
       "title": "情绪分歧冲高回落｜人保H转已触发"
-    },
-    {
-      "date": "2026-09-21",
-      "session": "pm",
-      "file": "reports/2026-09-21-pm.md",
-      "title": "地产医药双主线爆发｜无达标信号"
     }
   ]
 }
