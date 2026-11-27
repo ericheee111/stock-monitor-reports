@@ -1,7 +1,14 @@
 {
-  "generatedAt": "2026-11-27T14:20:00+08:00",
+  "generatedAt": "2026-11-27T20:30:00+08:00",
   "note": "2026-09-05 之前的报告由运行记录恢复存档；此后每轮扫描自动发布完整版。",
   "reports": [
+    {
+      "date": "2026-11-27",
+      "session": "pm",
+      "market": "us",
+      "file": "reports/2026-11-27-us-pm.md",
+      "title": "盘前普涨·PCE落地｜零信号"
+    },
     {
       "date": "2026-11-27",
       "session": "pm",
@@ -360,12 +367,6 @@
       "session": "am",
       "file": "reports/2026-09-25-am.md",
       "title": "A股中秋休市｜港股利率冲击普跌"
-    },
-    {
-      "date": "2026-09-24",
-      "session": "pm",
-      "file": "reports/2026-09-24-pm.md",
-      "title": "A股弱势防守｜中际旭创转失效"
     }
   ]
 }
