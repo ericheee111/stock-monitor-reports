@@ -1,7 +1,14 @@
 {
-  "generatedAt": "2026-11-27T20:30:00+08:00",
+  "generatedAt": "2026-11-28T08:22:39+08:00",
   "note": "2026-09-05 之前的报告由运行记录恢复存档；此后每轮扫描自动发布完整版。",
   "reports": [
+    {
+      "date": "2026-11-27",
+      "session": "am",
+      "market": "us",
+      "file": "reports/2026-11-27-us-am.md",
+      "title": "黑五芯片反弹·零信号｜NVDA弱反弹"
+    },
     {
       "date": "2026-11-27",
       "session": "pm",
@@ -361,12 +368,6 @@
       "session": "pm",
       "file": "reports/2026-09-25-pm.md",
       "title": "港股弱势防守｜保险H失效加深"
-    },
-    {
-      "date": "2026-09-25",
-      "session": "am",
-      "file": "reports/2026-09-25-am.md",
-      "title": "A股中秋休市｜港股利率冲击普跌"
     }
   ]
 }
